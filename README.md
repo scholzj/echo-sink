@@ -16,5 +16,5 @@ Defines the log level on which the recieved messages will be logged.
 1. Copy the `echo-sink-1.0.0.jar` jar file to your KAfka Connect plugin directory
 2. Create a connector instance Kafka Connect REST API:
 ```
-curl -X POST -H "Content-Type: application/json" --data '{ "name": "echo-sink-test", "config": { "connector.class": "EchoSink", "tasks.max": "3", "topics": "kafka-test-apps", "level": "INFO" } }' http://localhost:8083/connectors
+curl -X POST -H "Content-Type: application/json" --data '{ "name": "echo-sink-test", "config": { "connector.class": "EchoSink", "tasks.max": "3", "topics": "my-topic", "level": "INFO" } }' http://localhost:8083/connectors
 ```
