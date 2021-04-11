@@ -59,7 +59,7 @@ Defines the log level on which the received messages will be logged.
             artifacts:
               - type: jar
                 url: https://github.com/scholzj/echo-sink/releases/download/1.2.0/echo-sink-1.2.0.jar
-                sha512sum: 2fd59f9c18d39de60b5582ae21144538ee6dc3b23127c200d8e3c15629bf3859e157a909a2ecc879633e6038510c3be74ca2907e1e5d07ddf5443cc412551878
+                sha512sum: d7240e854ee97a266e65716f963ea7559b678aacc428fbee2d3765dd9500020d71878e0b454dece36ca8130e182389a67928ed2af8ebbcd0dfaf4ca364a7fdef
     ```
 3. Deploy the connector using the `KafkaConnector` CR:
     ```yaml
