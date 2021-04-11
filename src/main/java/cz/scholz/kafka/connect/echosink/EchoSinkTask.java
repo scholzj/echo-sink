@@ -6,7 +6,6 @@ package cz.scholz.kafka.connect.echosink;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -32,10 +31,8 @@ public class EchoSinkTask extends SinkTask {
     private static final Logger LOG = LoggerFactory.getLogger(EchoSinkTask.class);
     private static final String TRACING_OPERATION = "echo-sink";
 
-    private Level logLevel;
     private BiFunction<Object, Object, Void> logOnLevel;
     private Tracer tracer;
-    private Tracer.SpanBuilder spanBuilder;
 
     @Override
     public String version() {
@@ -46,6 +43,7 @@ public class EchoSinkTask extends SinkTask {
     public void start(Map<String, String> props) {
         tracer = GlobalTracer.get();
 
+        Level logLevel;
         try {
             logLevel = Level.valueOf(props.get(EchoSinkConnector.LEVEL_CONFIG));
         } catch (IllegalArgumentException|NullPointerException e)   {
@@ -93,10 +91,8 @@ public class EchoSinkTask extends SinkTask {
             // Extract tracing information
             Tracer.SpanBuilder spanBuilder = tracer.buildSpan(TRACING_OPERATION);
             Map<String, String> headers = new HashMap<>();
-            Iterator<Header> iter = record.headers().iterator();
 
-            while (iter.hasNext())  {
-                Header header = iter.next();
+            for (Header header : record.headers()) {
                 headers.put(header.key(), header.value().toString());
             }
 
