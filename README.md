@@ -3,13 +3,15 @@
 **Echo Sink** is a plugin for Kafka Connect. 
 It implements only a sink connector.
 The Sink connector receives messages from selected topic(s) and logs them using the Kafka Connect logger.
-The main purpose of this plugin is to test Kafka Connect installation.
-I created it to help me during development of [Strimzi Kafka operator for Kubernetes and OpenShift](http://strimzi.io).
+The main purpose of this plugin is to test a Kafka Connect installation.
+I created it to help me during the development of [Strimzi](http://strimzi.io) Kafka operator for Kubernetes and OpenShift](http://strimzi.io).
 
 ## Configuration options
 
-* `level`
-Defines the log level on which the received messages will be logged.
+| Option  | Description                                                                                                                                                                                                                                                                                                                    | Default |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `level` | Defines the log level on which the received messages will be logged.                                                                                                                                                                                                                                                           | `INFO`  |
+| `fail.task.after.records` | The tasks created by this connector will fail after receiving the specified number of records with an error. This is useful to test things such as status updated at task failures or automatic task restarts. If set to `0` or not set at all, this feature will be disabled and the connector will never fail intentionally. | `0`     |
 
 ## Examples
 
@@ -21,7 +23,7 @@ Defines the log level on which the received messages will be logged.
     curl -X POST -H "Content-Type: application/json" --data '{ "name": "echo-sink-test", "config": { "connector.class": "EchoSink", "tasks.max": "3", "topics": "my-topic", "level": "INFO" } }' http://localhost:8083/connectors
     ```
 
-### Using Strimzi
+### Using with Strimzi
 
 1. Deploy [Strimzi](https://strimzi.io)
 2. Deploy Kafka Connect using the `KafkaConnect` CR:

@@ -32,6 +32,8 @@ public class EchoSinkTask extends SinkTask {
     private static final String TRACING_OPERATION = "echo-sink";
 
     private BiFunction<Object, Object, Void> logOnLevel;
+    private long failTaskAfterRecords;
+    private long recordCounter = 0;
     private Tracer tracer;
 
     @Override
@@ -43,6 +45,21 @@ public class EchoSinkTask extends SinkTask {
     public void start(Map<String, String> props) {
         tracer = GlobalTracer.get();
 
+        // Parse fail after records config parameter
+        try {
+            String failTaskAfterRecords = props.get(EchoSinkConnector.FAIL_TASK_AFTER_RECORDS_CONFIG);
+
+            if (failTaskAfterRecords != null)   {
+                this.failTaskAfterRecords = Long.parseLong(failTaskAfterRecords);
+            } else {
+                this.failTaskAfterRecords = 0L;
+            }
+        } catch (Exception e)  {
+            LOG.error("Failed to parse {}. The task will not fail intentionally.", EchoSinkConnector.FAIL_TASK_AFTER_RECORDS_CONFIG, e);
+            this.failTaskAfterRecords = 0L;
+        }
+
+        // Parse the log level
         Level logLevel;
         try {
             logLevel = Level.valueOf(props.get(EchoSinkConnector.LEVEL_CONFIG));
@@ -106,6 +123,13 @@ public class EchoSinkTask extends SinkTask {
             }
 
             Span span = spanBuilder.withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER).start();
+
+            // Handle intentional failures
+            if (failTaskAfterRecords > 0
+                    && recordCounter++ >= failTaskAfterRecords)   {
+                LOG.warn("Failing as requested after {} records", failTaskAfterRecords);
+                throw new RuntimeException("Intentional task failure after receiving " + failTaskAfterRecords + " records.");
+            }
 
             // Log message
             log(record.key(), record.value());
