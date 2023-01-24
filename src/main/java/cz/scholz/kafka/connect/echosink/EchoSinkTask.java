@@ -124,15 +124,15 @@ public class EchoSinkTask extends SinkTask {
 
             Span span = spanBuilder.withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER).start();
 
+            // Log message
+            log(record.key(), record.value());
+
             // Handle intentional failures
             if (failTaskAfterRecords > 0
-                    && recordCounter++ >= failTaskAfterRecords)   {
+                    && ++recordCounter >= failTaskAfterRecords)   {
                 LOG.warn("Failing as requested after {} records", failTaskAfterRecords);
                 throw new RuntimeException("Intentional task failure after receiving " + failTaskAfterRecords + " records.");
             }
-
-            // Log message
-            log(record.key(), record.value());
 
             // Finish span
             span.finish();
