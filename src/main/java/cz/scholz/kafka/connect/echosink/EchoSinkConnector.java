@@ -15,14 +15,20 @@ import org.apache.kafka.common.config.ConfigDef.Importance;
 import org.apache.kafka.common.config.ConfigDef.Type;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EchoSinkConnector extends SinkConnector {
+    private static final Logger LOG = LoggerFactory.getLogger(EchoSinkConnector.class);
+
     public static final String LEVEL_CONFIG = "level";
     public static final String FAIL_TASK_AFTER_RECORDS_CONFIG = "fail.task.after.records";
+    public static final String FAIL_CONNECTOR_STARTUP_CONFIG = "fail.connector.startup";
 
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(LEVEL_CONFIG, Type.STRING, "INFO", Importance.HIGH, "Log level on which the received records will be printed. If not specified, INFO will be used.")
-            .define(FAIL_TASK_AFTER_RECORDS_CONFIG, Type.LONG, 0L, Importance.HIGH, "The connector task will fail after receiving specified number of records. If not specified or set to 0, it will not fail intentionally.");
+            .define(FAIL_TASK_AFTER_RECORDS_CONFIG, Type.LONG, 0L, Importance.HIGH, "The connector task will fail after receiving specified number of records. If not specified or set to 0, it will not fail intentionally.")
+            .define(FAIL_CONNECTOR_STARTUP_CONFIG, Type.BOOLEAN, false, Importance.HIGH, "The connector will fail at startup. When set to true, the connector instance will never get running.");
 
     private static final String VERSION = EchoSinkConnector.class.getPackage().getImplementationVersion();
 
@@ -39,6 +45,12 @@ public class EchoSinkConnector extends SinkConnector {
         AbstractConfig parsedConfig = new AbstractConfig(CONFIG_DEF, props);
         logLevel = parsedConfig.getString(LEVEL_CONFIG);
         failTaskAfterRecords = parsedConfig.getLong(FAIL_TASK_AFTER_RECORDS_CONFIG);
+
+        boolean failConnectorStartup = parsedConfig.getBoolean(FAIL_CONNECTOR_STARTUP_CONFIG);
+        if (failConnectorStartup)   {
+            LOG.warn("Failing at startup as requested");
+            throw new RuntimeException("Intentional connector startup failure.");
+        }
     }
 
     @Override

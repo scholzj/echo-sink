@@ -8,10 +8,11 @@ I created it to help me during the development of [Strimzi](http://strimzi.io) K
 
 ## Configuration options
 
-| Option  | Description                                                                                                                                                                                                                                                                                                                    | Default |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `level` | Defines the log level on which the received messages will be logged.                                                                                                                                                                                                                                                           | `INFO`  |
+| Option                    | Description                                                                                                                                                                                                                                                                                                                    | Default |
+|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `level`                   | Defines the log level on which the received messages will be logged.                                                                                                                                                                                                                                                           | `INFO`  |
 | `fail.task.after.records` | The tasks created by this connector will fail after receiving the specified number of records with an error. This is useful to test things such as status updated at task failures or automatic task restarts. If set to `0` or not set at all, this feature will be disabled and the connector will never fail intentionally. | `0`     |
+| `fail.connector.startup`  | The connector will fail at startup. When set to true, the connector instance will never get running.                                                                                                                                                                                                                           | `false` |
 
 ## Examples
 
@@ -60,8 +61,8 @@ I created it to help me during the development of [Strimzi](http://strimzi.io) K
           - name: echo-sink-connector
             artifacts:
               - type: jar
-                url: https://github.com/scholzj/echo-sink/releases/download/1.2.0/echo-sink-1.2.0.jar
-                sha512sum: d7240e854ee97a266e65716f963ea7559b678aacc428fbee2d3765dd9500020d71878e0b454dece36ca8130e182389a67928ed2af8ebbcd0dfaf4ca364a7fdef
+                url: https://github.com/scholzj/echo-sink/releases/download/1.4.0/echo-sink-1.4.0.jar
+                sha512sum: 6d40b6334b9e6ff81a11176f23d082688ace58ff000570867dfabbd69a301c579c21f571985612c36cddd9d03454cea8cf0ace0d1f9335b5ef2e039f9781074a
     ```
 3. Deploy the connector using the `KafkaConnector` CR:
     ```yaml
