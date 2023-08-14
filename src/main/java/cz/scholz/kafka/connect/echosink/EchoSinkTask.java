@@ -9,14 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import io.opentracing.References;
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapAdapter;
-import io.opentracing.tag.Tags;
-import io.opentracing.util.GlobalTracer;
 import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
@@ -34,7 +26,6 @@ public class EchoSinkTask extends SinkTask {
     private BiFunction<Object, Object, Void> logOnLevel;
     private long failTaskAfterRecords;
     private long recordCounter = 0;
-    private Tracer tracer;
 
     @Override
     public String version() {
@@ -43,8 +34,6 @@ public class EchoSinkTask extends SinkTask {
 
     @Override
     public void start(Map<String, String> props) {
-        tracer = GlobalTracer.get();
-
         // Parse fail after records config parameter
         try {
             String failTaskAfterRecords = props.get(EchoSinkConnector.FAIL_TASK_AFTER_RECORDS_CONFIG);
@@ -105,24 +94,11 @@ public class EchoSinkTask extends SinkTask {
     @Override
     public void put(Collection<SinkRecord> sinkRecords) {
         for (SinkRecord record : sinkRecords) {
-            // Extract tracing information
-            Tracer.SpanBuilder spanBuilder = tracer.buildSpan(TRACING_OPERATION);
             Map<String, String> headers = new HashMap<>();
 
             for (Header header : record.headers()) {
                 headers.put(header.key(), header.value().toString());
             }
-
-            try {
-                SpanContext parentSpan = tracer.extract(Format.Builtin.HTTP_HEADERS, new TextMapAdapter(headers));
-                if (parentSpan != null) {
-                    spanBuilder.addReference(References.FOLLOWS_FROM, parentSpan);
-                }
-            } catch (IllegalArgumentException e) {
-                // pass
-            }
-
-            Span span = spanBuilder.withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER).start();
 
             // Log message
             log(record.key(), record.value());
@@ -133,9 +109,6 @@ public class EchoSinkTask extends SinkTask {
                 LOG.warn("Failing as requested after {} records", failTaskAfterRecords);
                 throw new RuntimeException("Intentional task failure after receiving " + failTaskAfterRecords + " records.");
             }
-
-            // Finish span
-            span.finish();
         }
     }
 
