@@ -14,6 +14,10 @@ I created it to help me during the development of [Strimzi](http://strimzi.io) K
 | `fail.task.after.records` | The tasks created by this connector will fail after receiving the specified number of records with an error. This is useful to test things such as status updated at task failures or automatic task restarts. If set to `0` or not set at all, this feature will be disabled and the connector will never fail intentionally. | `0`     |
 | `fail.connector.startup`  | The connector will fail at startup. When set to true, the connector instance will never get running.                                                                                                                                                                                                                           | `false` |
 
+## Using as OCI artifact
+
+You can use the provided OCI artifact `ghcr.io/scholzj/echo-sink:latest` to add the plugin in Kubernetes using the [Image Volumes](https://kubernetes.io/docs/tasks/configure-pod-container/image-volumes/).
+
 ## Examples
 
 ### Using REST API
