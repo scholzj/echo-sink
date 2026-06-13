@@ -22,10 +22,10 @@ You can use the provided OCI artifact `ghcr.io/scholzj/echo-sink:latest` to add 
 
 ### Using REST API
 
-1. Copy the `echo-sink-1.2.0.jar` jar file to your Kafka Connect plugin directory
+1. Copy the `echo-sink-1.6.0.jar` jar file to your Kafka Connect plugin directory
 2. Create a connector instance Kafka Connect REST API:
     ```
-    curl -X POST -H "Content-Type: application/json" --data '{ "name": "echo-sink-test", "config": { "connector.class": "EchoSink", "tasks.max": "3", "topics": "my-topic", "level": "INFO" } }' http://localhost:8083/connectors
+    curl -X POST -H "Content-Type: application/json" --data '{ "name": "echo-sink-test", "config": { "connector.class": "EchoSinkConnector", "tasks.max": "3", "topics": "my-topic", "level": "INFO" } }' http://localhost:8083/connectors
     ```
 
 ### Using with Strimzi
@@ -65,8 +65,8 @@ You can use the provided OCI artifact `ghcr.io/scholzj/echo-sink:latest` to add 
           - name: echo-sink-connector
             artifacts:
               - type: jar
-                url: https://github.com/scholzj/echo-sink/releases/download/1.4.0/echo-sink-1.4.0.jar
-                sha512sum: 6d40b6334b9e6ff81a11176f23d082688ace58ff000570867dfabbd69a301c579c21f571985612c36cddd9d03454cea8cf0ace0d1f9335b5ef2e039f9781074a
+                url: https://github.com/scholzj/echo-sink/releases/download/1.6.0/echo-sink-1.6.0.jar
+                sha512sum: 3f30d48079578f9f2d0a097ed9a7088773b135dff3dc8e70d87f8422c073adc1181cb41d823c1d1472b0447a337e4877e535daa34ca8ef21d608f8ee6f5e4a9c
     ```
 3. Deploy the connector using the `KafkaConnector` CR:
     ```yaml
@@ -77,7 +77,7 @@ You can use the provided OCI artifact `ghcr.io/scholzj/echo-sink:latest` to add 
       labels:
         strimzi.io/cluster: my-connect
     spec:
-      class: EchoSink
+      class: EchoSinkConnector
       tasksMax: 1
       config:
         level: "INFO"
